@@ -32,9 +32,6 @@ function initializeDapp (onComplete) {
       admin = accs[0]
       console.log('admin account :', admin)
 
-      // getEther(admin, function (err, res) {
-      //   if (!err) console.log('admin\'s ether:', res)
-      // })
       MetaCoin.init(web3, admin)
       onComplete()
     })
@@ -84,13 +81,10 @@ router.post('/send', function (req, res) {
     })
   }
 
-  MetaCoin.transfer(from || sender, to, value)
+  MetaCoin.sendCoin(from || sender, to, value)
   .then(function (result) {
-    var response = {
-      balances: result
-    }
-    console.log('/send: response', response)
-    return res.status(200).json(response)
+    console.log('/send: response', result)
+    return res.status(200).json(result)
   }).catch(function (error) {
     return res.status(500).json({
       message: error.message

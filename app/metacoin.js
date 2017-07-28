@@ -3,7 +3,7 @@ const fs = require('fs')
 var contract
 var admin
 
-function initialize (web3, owner) {
+exports.init = function (web3, owner) {
   admin = owner
   // Read the compiled contract code
   var filePath = __dirname + '/../build/contracts/MetaCoin.json'
@@ -31,35 +31,21 @@ function initialize (web3, owner) {
   }
 }
 
-function getBalance (account) {
+exports.getBalance = function (account) {
   return contract.methods.getBalance(account).call({from: account})
 }
 
-function transfer (sender, receiver, value) {
+exports.sendCoin = function (sender, receiver, value) {
   return new Promise(function (resolve, reject) {
     contract.methods.sendCoin(receiver, value).send({from: sender})
     .then(function (receipt) {
       if (receipt) {
         console.log('transaction receipt', receipt)
-        var balances = {receiver: '', sender: ''}
-        getBalance(sender).then(function (balance) {
-          balances.sender = balance
-          return getBalance(receiver)
-        }).then(function (balance) {
-          balances.receiver = balance
-          return resolve(balances)
-        }).catch(function (err) {
-          return reject(err)
-        })
+        resolve({result: true})
       }
+      resolve({result: false})
     }).catch(function (err) {
       return reject(err)
     })
   })
-}
-
-module.exports = {
-  init: initialize,
-  getBalance: getBalance,
-  transfer: transfer
 }
